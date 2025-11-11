@@ -1,0 +1,13 @@
+docker
+
+FROM node:alpine
+COPY . /sid
+cmd node /sid/siddhant.js
+
+js file
+console.log("name: siddhant kaldate")
+
+
+docker --version
+node siddhant.js
+docker build -t sid .
