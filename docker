@@ -9,5 +9,5 @@ console.log("name: siddhant kaldate")
 
 
 docker --version
-node siddhant.js
-docker build -t sid .
+node (js file name).js
+docker build -t (filename) .
