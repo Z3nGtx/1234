@@ -11,3 +11,4 @@ console.log("name: siddhant kaldate")
 docker --version
 node (js file name).js
 docker build -t (filename) .
+docker image
