@@ -1,0 +1,73 @@
+#include <stdio.h>
+
+int main() {
+    int n, i, j;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    int bt[n], at[n], rt[n], wt[n], tat[n];
+    int complete = 0, time = 0, minm = 9999;
+    int shortest = 0, finish_time;
+    float total_wt = 0, total_tat = 0;
+
+    // Input arrival and burst times
+    for (i = 0; i < n; i++) {
+        printf("Enter Arrival Time of P%d: ", i+1);
+        scanf("%d", &at[i]);
+        printf("Enter Burst Time of P%d: ", i+1);
+        scanf("%d", &bt[i]);
+        rt[i] = bt[i];  // remaining time initially = burst time
+    }
+
+    printf("\nProcess\tAT\tBT\tWT\tTAT\n");
+
+    // Continue until all processes are complete
+    while (complete != n) {
+        minm = 9999;
+        shortest = -1;
+
+        // Find process with minimum remaining time among arrived processes
+        for (j = 0; j < n; j++) {
+            if ((at[j] <= time) && (rt[j] < minm) && rt[j] > 0) {
+                minm = rt[j];
+                shortest = j;
+            }
+        }
+
+        if (shortest == -1) {  // no process available yet
+            time++;
+            continue;
+        }
+
+        // Reduce remaining time
+        rt[shortest]--;
+        minm = rt[shortest];
+
+        if (minm == 0) minm = 9999;
+
+        // If process gets completely executed
+        if (rt[shortest] == 0) {
+            complete++;
+            finish_time = time + 1;
+
+            wt[shortest] = finish_time - bt[shortest] - at[shortest];
+            if (wt[shortest] < 0)
+                wt[shortest] = 0;
+
+            tat[shortest] = bt[shortest] + wt[shortest];
+        }
+        time++;
+    }
+
+    // Display results
+    for (i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t%d\n", i+1, at[i], bt[i], wt[i], tat[i]);
+        total_wt += wt[i];
+        total_tat += tat[i];
+    }
+
+    printf("\nAverage Waiting Time = %.2f", total_wt / n);
+    printf("\nAverage Turnaround Time = %.2f\n", total_tat / n);
+
+    return 0;
+}
