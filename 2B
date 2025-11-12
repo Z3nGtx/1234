@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+    int status;
+
+    pid = fork(); // Create a new process
+
+    if (pid < 0) {
+        // fork() failed
+        printf("Fork failed!\n");
+        return 1;
+    } 
+    else if (pid == 0) {
+        // Child process
+        printf("\nChild Process: Executing new program using execve()\n");
+
+        // Array elements passed as command-line arguments
+        char *args[] = {"/bin/echo", "Array Elements:", "10", "20", "30", "40", NULL};
+
+        // Replace child process with echo command
+        execve("/bin/echo", args, NULL);
+
+        // If execve fails
+        printf("execve failed!\n");
+    } 
+    else {
+        // Parent process
+        printf("Parent Process: Waiting for child to finish...\n");
+        wait(&status);
+        printf("Parent Process: Child execution complete.\n\n");
+    }
+
+    return 0;
+}
