@@ -1,0 +1,78 @@
+#!/bin/bash
+
+FILE="addressbook.txt"
+
+# Function to create address book
+create_addressbook() {
+    > "$FILE"
+    echo "✅ Address book created successfully!"
+}
+
+# Function to view address book
+view_addressbook() {
+    if [ ! -f "$FILE" ] || [ ! -s "$FILE" ]; then
+        echo "📂 Address book is empty or not created!"
+    else
+        echo "------ ADDRESS BOOK ------"
+        cat "$FILE"
+        echo "--------------------------"
+    fi
+}
+
+# Function to insert a record
+insert_record() {
+    echo "Enter Name:"
+    read name
+    echo "Enter Phone Number:"
+    read phone
+    echo "Enter Email:"
+    read email
+
+    echo "Name: $name | Phone: $phone | Email: $email" >> "$FILE"
+    echo "✅ Record inserted successfully!"
+}
+
+# Function to delete a record
+delete_record() {
+    if [ ! -f "$FILE" ]; then
+        echo "Address book not found! Create it first."
+        return
+    fi
+
+    echo "Enter name to delete:"
+    read name
+
+    grep -v "Name: $name" "$FILE" > temp.txt
+    mv temp.txt "$FILE"
+    echo "✅ Record deleted (if existed)."
+}
+
+# Main Menu
+while true
+do
+    echo ""
+    echo "------ ADDRESS BOOK MENU ------"
+    echo "1. Create Address Book"
+    echo "2. View Address Book"
+    echo "3. Insert Record"
+    echo "4. Delete Record"
+    echo "5. Exit"
+    echo "--------------------------------"
+    echo -n "Enter your choice: "
+    read choice
+
+    case $choice in
+        1) create_addressbook ;;
+        2) view_addressbook ;;
+        3) insert_record ;;
+        4) delete_record ;;
+        5) echo "Exiting program..."; exit 0 ;;
+        *) echo "❌ Invalid choice! Try again." ;;
+    esac
+done
+
+
+
+
+chmod +x addressbook.sh   # make executable
+./addressbook.sh 
