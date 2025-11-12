@@ -1,0 +1,85 @@
+#include <stdio.h>
+
+int findOptimal(int pages[], int n, int frame[], int f, int index) {
+    int farthest = index, pos = -1;
+    for (int i = 0; i < f; i++) {
+        int j;
+        for (j = index; j < n; j++)
+            if (frame[i] == pages[j]) {
+                if (j > farthest) {
+                    farthest = j;
+                    pos = i;
+                }
+                break;
+            }
+        if (j == n) return i; // page not used again
+    }
+    return (pos == -1) ? 0 : pos;
+}
+
+void FCFS(int pages[], int n, int f) {
+    int frame[f], index = 0, faults = 0;
+    for (int i = 0; i < f; i++) frame[i] = -1;
+
+    printf("\nFCFS Page Replacement:\n");
+    for (int i = 0; i < n; i++) {
+        int hit = 0;
+        for (int j = 0; j < f; j++)
+            if (frame[j] == pages[i]) hit = 1;
+
+        if (!hit) {
+            frame[index] = pages[i];
+            index = (index + 1) % f;
+            faults++;
+        }
+
+        printf("Page %d -> ", pages[i]);
+        for (int j = 0; j < f; j++)
+            if (frame[j] != -1) printf("%d ", frame[j]);
+        printf(hit ? "(Hit)\n" : "(Miss)\n");
+    }
+    printf("Total Page Faults (FCFS) = %d\n", faults);
+}
+
+void Optimal(int pages[], int n, int f) {
+    int frame[f], faults = 0;
+    for (int i = 0; i < f; i++) frame[i] = -1;
+
+    printf("\nOptimal Page Replacement:\n");
+    for (int i = 0; i < n; i++) {
+        int hit = 0;
+        for (int j = 0; j < f; j++)
+            if (frame[j] == pages[i]) hit = 1;
+
+        if (!hit) {
+            int pos = -1;
+            for (int j = 0; j < f; j++)
+                if (frame[j] == -1) { pos = j; break; }
+            if (pos == -1) pos = findOptimal(pages, n, frame, f, i + 1);
+            frame[pos] = pages[i];
+            faults++;
+        }
+
+        printf("Page %d -> ", pages[i]);
+        for (int j = 0; j < f; j++)
+            if (frame[j] != -1) printf("%d ", frame[j]);
+        printf(hit ? "(Hit)\n" : "(Miss)\n");
+    }
+    printf("Total Page Faults (Optimal) = %d\n", faults);
+}
+
+int main() {
+    int n, f;
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+    int pages[n];
+    printf("Enter page reference string: ");
+    for (int i = 0; i < n; i++) scanf("%d", &pages[i]);
+    printf("Enter number of frames (min 3): ");
+    scanf("%d", &f);
+
+    FCFS(pages, n, f);
+    Optimal(pages, n, f);
+
+    return 0;
+}
