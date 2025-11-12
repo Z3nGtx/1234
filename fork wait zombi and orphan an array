@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    int arr[5] = {5, 3, 1, 4, 2};
+    pid_t pid;
+
+    printf("Parent started (PID: %d)\n", getpid());
+
+    pid = fork(); // Create a child process
+
+    if (pid < 0) {
+        printf("Fork failed!\n");
+    }
+    else if (pid == 0) {
+        // ---------- Child Process ----------
+        printf("\nChild started (PID: %d, Parent PID: %d)\n", getpid(), getppid());
+        printf("Child: Sorting array...\n");
+
+        // Simple Bubble Sort
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4 - i; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+
+        printf("Child: Sorted array = ");
+        for (int i = 0; i < 5; i++) printf("%d ", arr[i]);
+        printf("\n");
+
+        printf("Child: Sleeping 5 sec (to show orphan)...\n");
+        sleep(5);
+        printf("Child: Parent may have ended, now I'm orphan (New Parent PID: %d)\n", getppid());
+    }
+    else {
+        // ---------- Parent Process ----------
+        printf("\nParent waiting for child...\n");
+        wait(NULL); // Wait for child to complete
+        printf("Parent: Child finished, now creating zombie for 5 sec...\n");
+        sleep(5); // Child ended, parent sleeping -> child becomes zombie for short time
+        printf("Parent: Done.\n");
+    }
+
+    return 0;
+}
