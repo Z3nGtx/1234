@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void sort(int arr[], int n) {   // simple bubble sort
+    for (int i = 0; i < n - 1; i++)
+        for (int j = 0; j < n - i - 1; j++)
+            if (arr[j] > arr[j + 1]) {
+                int t = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = t;
+            }
+}
+
+void SCAN(int req[], int n, int head, int disk_size) {
+    int seek = 0, dir = 1; // 1 = moving away (right)
+    int temp[n + 2], idx = 0;
+
+    // Add head and disk boundaries
+    for (int i = 0; i < n; i++) temp[i] = req[i];
+    temp[n] = head;
+    temp[n + 1] = disk_size - 1;
+    n += 2;
+
+    sort(temp, n);
+
+    // find head position
+    int pos;
+    for (int i = 0; i < n; i++)
+        if (temp[i] == head) pos = i;
+
+    printf("\nSCAN Order: ");
+    if (dir) { // right direction
+        for (int i = pos; i < n; i++) {
+            printf("%d ", temp[i]);
+            if (i < n - 1) seek += abs(temp[i + 1] - temp[i]);
+        }
+        for (int i = pos - 1; i >= 0; i--) {
+            printf("%d ", temp[i]);
+            if (i > 0) seek += abs(temp[i] - temp[i - 1]);
+        }
+    }
+    printf("\nTotal Seek Time = %d\n", seek);
+}
+
+void CLOOK(int req[], int n, int head) {
+    int seek = 0;
+    int temp[n + 1];
+
+    for (int i = 0; i < n; i++) temp[i] = req[i];
+    temp[n] = head;
+    n++;
+
+    sort(temp, n);
+
+    int pos;
+    for (int i = 0; i < n; i++)
+        if (temp[i] == head) pos = i;
+
+    printf("\nC-LOOK Order: ");
+    for (int i = pos; i < n; i++) {
+        printf("%d ", temp[i]);
+        if (i < n - 1) seek += abs(temp[i + 1] - temp[i]);
+    }
+    for (int i = 0; i < pos; i++) {
+        printf("%d ", temp[i]);
+        if (i < pos - 1) seek += abs(temp[i + 1] - temp[i]);
+    }
+    seek += abs(temp[0] - temp[n - 1]); // circular jump
+    printf("\nTotal Seek Time = %d\n", seek);
+}
+
+int main() {
+    int n, head, disk;
+    printf("Enter number of requests: ");
+    scanf("%d", &n);
+    int req[n];
+    printf("Enter request queue: ");
+    for (int i = 0; i < n; i++) scanf("%d", &req[i]);
+    printf("Enter initial head position: ");
+    scanf("%d", &head);
+    printf("Enter disk size: ");
+    scanf("%d", &disk);
+
+    SCAN(req, n, head, disk);
+    CLOOK(req, n, head);
+
+    return 0;
+}
